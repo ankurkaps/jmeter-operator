@@ -99,7 +99,11 @@ spec:
   influxdb_install: "true"
 ```
 
-Run "**kubectl create -f jmeter-deploy.yaml**". As you can see, you can enable optional features and also modify some parameters like service type for the Grafana deployment (e.g. you can set this to ClusterIP if you want to expose the service via an Ingress) and the container images.
+Run "**kubectl apply -f jmeter-deploy.yaml**". As you can see, you can enable optional features and also modify some parameters like service type for the Grafana deployment (e.g. you can set this to ClusterIP if you want to expose the service via an Ingress) and the container images.
+
+```
+kubectl apply -f jmeter-deploy.yaml
+```
 
 N.B -- The "grafana_service_type" controls the kind of service type for both Grafana and Grafana Reporter
 
