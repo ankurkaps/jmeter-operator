@@ -109,7 +109,9 @@ N.B -- The "grafana_service_type" controls the kind of service type for both Gra
 
 Confirm that the resources have been created:
 
-**kubectl -n tqa get jmeter**
+```
+kubectl -n tqa get jmeter
+```
 
 ```
 NAME           AGE
