@@ -25,9 +25,12 @@ This is a cluster-wide scope operator, the reason for this is that multiple Jmet
 
 (3.) Confirm that the CRD has been installed:
 ```
-kubectl get crd | grep jmeter" or "kubectl describe crd jmeters.loadtest.jmeter.com
+kubectl get crd | grep jmeter
 ```
 
+```
+kubectl describe crd jmeters.loadtest.jmeter.com
+```
 From "**_kubectl describe crd jmeters.loadtest.jmeter.com_**", you should below as part of the output:
 
 ```
