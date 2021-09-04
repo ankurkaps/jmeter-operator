@@ -159,6 +159,8 @@
                 imagePullPolicy: IfNotPresent
                 name: influxdb
                 volumeMounts:
+                - name: influxdb-data
+                  mountPath: /var/lib/influxdb
                 - name: config-volume
                   mountPath: /etc/influxdb
                 ports:
@@ -169,6 +171,9 @@
                   - containerPort: 2003
                     name: graphite
             volumes:
+            - name: influxdb-data
+              persistentVolumeClaim:
+                claimName: influxdb-data            
             - name: config-volume
               configMap:
                name: '{{ meta.name }}-influxdb-config'
@@ -198,6 +203,7 @@
             targetPort: 2003
         selector:
           app: '{{ meta.name }}-influxdb'    
+
 - name: Grafana Deployment
   when: grafana_install == "true"
   k8s:
@@ -220,10 +226,18 @@
             labels:
               app: '{{ meta.name }}-grafana'
           spec:
+            securityContext:
+              fsGroup: 472
+              supplementalGroups:
+                - 472
             containers:
             - name: grafana
               image: "{{grafana_image}}"
               imagePullPolicy: IfNotPresent
+              volumeMounts:
+              - mountPath: "/var/lib/grafana"
+                name: grafana-data
+              # subPath: grafana            
               ports:
               - containerPort: 3000
                 protocol: TCP
@@ -233,14 +247,18 @@
               - name: GF_USERS_ALLOW_ORG_CREATE
                 value: "true"
               - name: GF_AUTH_ANONYMOUS_ENABLED
-                value: "true"
+                value: "false"
               - name: GF_AUTH_ANONYMOUS_ORG_ROLE
-                value: Admin
+                value: Viewer
               - name: GF_SERVER_ROOT_URL
                 # If you're only using the API Server proxy, set this value instead:
                 # value: /api/v1/namespaces/kube-system/services/monitoring-grafana/proxy
                 value: "{{grafana_server_root}}"
-    
+            volumes:
+              - name: grafana-data
+                persistentVolumeClaim:
+                  claimName: grafana-data
+
 - name: Grafana Service
   when: grafana_install == "true"
   k8s:
@@ -287,6 +305,7 @@
             - name: jmreporter
               image: "{{grafana_reporter_image}}"
               imagePullPolicy: IfNotPresent
+              command: ["/usr/local/bin/grafana-reporter", "-ip", "{{ meta.name }}-grafana:3000"]
               ports:
               - containerPort: 8686         
 
@@ -304,7 +323,7 @@
           jmeter_mode: '{{ meta.name }}-jmeter-reporter'
       spec:
         ports:
-          - port: 8686
+          - port: 80
             targetPort: 8686
         selector:
           jmeter_mode: '{{ meta.name }}-jmeter-reporter'

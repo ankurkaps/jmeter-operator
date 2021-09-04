@@ -17,7 +17,7 @@ spec:
       containers:
         - name: jmeter-operator
           # Replace this with the built image name
-          image: kubernautslabs/jmeter-operator:v0.0.1
+          image: boschcb.azurecr.io/jmeter-operator/jmeter-operator:v0.0.2
           imagePullPolicy: Always
           env:
             - name: WATCH_NAMESPACE

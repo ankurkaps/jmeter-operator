@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tqa-kubernetes-ingress
+  namespace: tqa
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+  - hosts:
+    - lm-dev-loadtest.southeastasia.cloudapp.azure.com
+    secretName: tls-secret
+  rules:
+  - host: "lm-dev-loadtest.southeastasia.cloudapp.azure.com"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/" 
+        backend:
+          service:
+            name: tqa-loadtest-grafana
+            port:
+              number: 3000
+              # number: 80
+  - host: "lm-dev-loadtest.southeastasia.cloudapp.azure.com"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/jmeter-reporter/" 
+        backend:
+          service:
+            name: tqa-loadtest-jmeter-reporter
+            port:
+              number: 8686
+
+

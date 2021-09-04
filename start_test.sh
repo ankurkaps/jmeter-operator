@@ -21,8 +21,8 @@ then
     exit
 fi
 
-jmx="$1"
-[ -n "$jmx" ] || read -p 'Enter path to the jmx file ' jmx
+jmx="$2"
+[ -n "$jmx" ] || read -p 'Enter path to the jmx file: ' jmx
 
 if [ ! -f "$jmx" ];
 then
@@ -35,7 +35,13 @@ test_name="$(basename "$jmx")"
 
 #Get Master pod details
 
-master_pod=`kubectl -n $namespace get po | grep jmeter-master | awk '{print $1}'`
+master_pod=`kubectl -n $namespace get po | grep jmeter-master | grep Running | awk '{print $1}'`
+
+if [ -z master_pod ];
+then
+    echo "Could not find a running master pod!"
+    exit
+fi
 
 kubectl -n $namespace cp "$jmx" "$master_pod:/$test_name"
 
