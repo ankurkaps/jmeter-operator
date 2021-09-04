@@ -14,15 +14,19 @@ This effort is based partially on https://github.com/kubernauts/jmeter-kubernete
 
 The steps to use this operator is as follows:
 
-(1.) Clone this repo "**git clone https://github.com/kubernauts/jmeter-operator.git**"
+(1.) Clone this repo.
 
 (2.) Install the Jmeter CRD (custom resource definition):
-
-"**kubectl apply -f deploy/crds/loadtest_v1alpha1_jmeter_crd.yaml**".
+```
+kubectl apply -f deploy/crds/loadtest_v1alpha1_jmeter_crd.yaml
+```
 
 This is a cluster-wide scope operator, the reason for this is that multiple Jmeter clusters may be needed within an organization but there is nothing stopping you from using just one Jmeter deployment but it is strongly advised that you run it in a dedicated namespace which will we will as we proceed
 
-(3.) Confirm that the CRD has been installed "**kubectl get crd | grep jmeter" or "kubectl describe crd jmeters.loadtest.jmeter.com**"
+(3.) Confirm that the CRD has been installed:
+```
+kubectl get crd | grep jmeter" or "kubectl describe crd jmeters.loadtest.jmeter.com
+```
 
 From "**_kubectl describe crd jmeters.loadtest.jmeter.com_**", you should below as part of the output:
 
@@ -50,18 +54,24 @@ Status:
   Conditions:
 ```
 
-(4.) Deploy the Jmeter operator deployment "**kubectl apply -f deploy/**" , this is what will watch the API for any jmeter CRD objects, once it detects the jmeter CRD, it will proceed to process that request and create the necessary kubernetes objects
+(4.) Deploy the Jmeter operator deployment, this is what will watch the API for any jmeter CRD objects, once it detects the jmeter CRD, it will proceed to process that request and create the necessary kubernetes objects
+
+```
+kubectl apply -f deploy/
+```
 
 Check the status for the operator deployment (this is deployed in kube-system namespace by default)
-
+```
 kubectl -n kube-system get pods | grep jmeter
-
+```
 ```
 jmeter-operator-6f54d969c7-w4h4l 1/1 Running 0 2m
-
 ```
 
-(5.) Create a namespace for the jmeter deployment: "**kubectl create namespace tqa**"
+(5.) Create a namespace for the jmeter deployment:
+```
+kubectl create namespace tqa
+```
 
 (6.) Create a Jmeter deployment manifest (e.g jmeter-deploy.yaml), example is given below:
 
@@ -130,13 +140,15 @@ replicaset.apps/tqa-loadtest-jmeter-slaves-c4787d59    2         2         2    
 
 (7.) The next step is entirely optional, they are just to make creating a Jmeter load test easier, the scripts (**[initialize_cluster.sh](./initialize_cluster.sh) and [start_test.sh](./start_test.sh)**) can be modified to suit your needs as you desire.
 
+```
+./initialize_cluster.sh
+```
+
 The initialize_cluster.sh script will create the database name in InfluxDB (default name is 'jmeter') and also create the InfluxDB datasource in Grafana.
 
 The script will ask you about the namespace where the jmeter cluster was created (tqa) and then proceed to create the needed resources in InfluxDB and Grafana.
 
 ```./initialize_cluster.sh
-./initialize_cluster.sh
-
 Enter the Jmeter Namespace: tqa
 Creating Influxdb jmeter Database
 Creating the Influxdb data source
@@ -151,6 +163,8 @@ Creating the Influxdb data source
 
 ```
 ./start_test.sh
+```
+```
 Enter the Jmeter Namespace: tqa
 Enter path to the jmx file cloudssky.jmx
 Mar 17, 2019 10:37:19 AM java.util.prefs.FileSystemPreferences$1 run
@@ -179,10 +193,9 @@ Otherwise the graphs on Grafana may not show anything!
 
 ![](img/test_progress.png)
 
+(11.) Import JMeter dashboard for https://grafana.com/grafana/dashboards/5496
+
 To learn more about the Grafana reporter module and how to make use of it, you can check the following blog post:
 
 <https://goo.gl/mkoX9E>
 
-```
-
-```
